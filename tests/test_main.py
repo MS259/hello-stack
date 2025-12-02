@@ -31,3 +31,24 @@ def test_create_item_and_list():
     resp_list = client.get("/items")
     assert resp_list.status_code == 200
     assert resp_list.json() == [new_item]
+
+
+def test_get_item_by_id():
+    ITEMS.clear()
+
+    item_one = {"id": 1, "name": "First"}
+    item_two = {"id": 2, "name": "Second"}
+    client.post("/items", json=item_one)
+    client.post("/items", json=item_two)
+
+    resp = client.get("/items/2")
+    assert resp.status_code == 200
+    assert resp.json() == item_two
+
+
+def test_get_item_not_found():
+    ITEMS.clear()
+
+    resp = client.get("/items/999")
+    assert resp.status_code == 404
+    assert resp.json() == {"detail": "Item not found"}
